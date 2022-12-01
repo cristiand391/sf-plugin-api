@@ -1,0 +1,8 @@
+[
+  {
+    "command": "env:api",
+    "plugin": "@cristiand391/sf-plugin-api",
+    "flags": ["body", "header", "include", "method", "target-org"],
+    "alias": []
+  }
+]
