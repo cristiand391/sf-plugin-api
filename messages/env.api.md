@@ -6,6 +6,9 @@ Makes an authenticated HTTP request to the Salesforce REST API and prints the re
 
 You must specify a Salesforce org to use, either with the --target-org flag or by setting your default org with the `target-org` configuration variable.
 
+Read the Salesforce REST API developer guide at:
+https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm
+
 # examples
 
 - List information about limits in your org:
