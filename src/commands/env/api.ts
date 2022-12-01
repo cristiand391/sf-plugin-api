@@ -38,6 +38,7 @@ export default class EnvApi extends SfCommand<string> {
       char: 'o',
     }),
     include: Flags.boolean({
+      char: 'i',
       summary: messages.getMessage('flags.include.summary'),
       default: false,
     }),
