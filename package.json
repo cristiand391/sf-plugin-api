@@ -9,7 +9,7 @@
   "bugs": "https://github.com/cristiand391/sf-plugin-api/issues",
   "dependencies": {
     "@oclif/core": "^1.18.0",
-    "@salesforce/core": "^3.31.17",
+    "@salesforce/core": "^3.32.5",
     "@salesforce/sf-plugins-core": "^1.17.0",
     "chalk": "^4",
     "got": "11.8.5",
