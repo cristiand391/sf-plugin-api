@@ -17,7 +17,6 @@ jobs:
         with:
           git-user-name: Cristian Dominguez
           github-token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
-          output-file: false
           # always do the release, even if there are no semantic commits
           skip-on-empty: false
           tag-prefix: ''
