@@ -27,7 +27,7 @@ const messages = Messages.load('@cristiand391/sf-plugin-api', 'env.api', [
   'errors.invalid-http-header',
 ]);
 
-export default class EnvApi extends SfCommand<string> {
+export default class EnvApi extends SfCommand<void> {
   public static summary = messages.getMessage('summary');
   public static description = messages.getMessage('description');
   public static examples = messages.getMessages('examples');
@@ -76,13 +76,13 @@ export default class EnvApi extends SfCommand<string> {
           'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
         ]);
       }
-      headers[split[0]] = split[1];
+      headers[split[0]] = split[1].trim();
     }
 
     return headers;
   }
 
-  public async run(): Promise<string> {
+  public async run(): Promise<void> {
     const { flags, args } = await this.parse(EnvApi);
 
     let body: Buffer;
@@ -129,7 +129,5 @@ export default class EnvApi extends SfCommand<string> {
     if (res.statusCode >= 400) {
       process.exitCode = 1;
     }
-
-    return res.body;
   }
 }
