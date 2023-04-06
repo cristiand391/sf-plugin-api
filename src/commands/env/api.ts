@@ -12,20 +12,10 @@ import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { SfError, Messages, Org } from '@salesforce/core';
-import { CliUx } from '@oclif/core';
+import { Args, ux } from '@oclif/core';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@cristiand391/sf-plugin-api', 'env.api', [
-  'summary',
-  'description',
-  'examples',
-  'flags.target-org.summary',
-  'flags.method.summary',
-  'flags.include.summary',
-  'flags.header.summary',
-  'flags.body.summary',
-  'errors.invalid-http-header',
-]);
+const messages = Messages.loadMessages('@cristiand391/sf-plugin-api', 'env.api');
 
 export default class EnvApi extends SfCommand<void> {
   public static summary = messages.getMessage('summary');
@@ -33,21 +23,18 @@ export default class EnvApi extends SfCommand<void> {
   public static examples = messages.getMessages('examples');
   public static enableJsonFlag = false;
   public static flags = {
-    'target-org': Flags.requiredOrg({
-      summary: messages.getMessage('flags.target-org.summary'),
-      char: 'o',
-    }),
+    'target-org': Flags.requiredOrg(),
     include: Flags.boolean({
       char: 'i',
       summary: messages.getMessage('flags.include.summary'),
       default: false,
     }),
-    method: Flags.enum<Method>({
+    method: Flags.custom<Method>({
       options: ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE'],
       summary: messages.getMessage('flags.method.summary'),
       char: 'X',
       default: 'GET',
-    }),
+    })(),
     header: Flags.string({
       summary: messages.getMessage('flags.header.summary'),
       char: 'H',
@@ -58,13 +45,12 @@ export default class EnvApi extends SfCommand<void> {
     }),
   };
 
-  public static args = [
-    {
-      name: 'endpoint',
-      description: 'Salesforce API endpoint.',
+  public static args = {
+    endpoint: Args.string({
+      description: 'Salesforce API endpoint',
       required: true,
-    },
-  ];
+    }),
+  };
 
   private static getHeaders(keyValPair: string[]): Headers {
     const headers = {};
@@ -95,7 +81,7 @@ export default class EnvApi extends SfCommand<void> {
 
     await org.refreshAuth();
 
-    const url = `${org.getField<string>(Org.Fields.INSTANCE_URL)}/${args.endpoint as string}`;
+    const url = `${org.getField<string>(Org.Fields.INSTANCE_URL)}/${args.endpoint}`;
 
     const res = await got(url, {
       agent: { https: ProxyAgent(getProxyForUrl(url)) },
@@ -120,7 +106,7 @@ export default class EnvApi extends SfCommand<void> {
 
     try {
       // Try to pretty-print JSON response.
-      CliUx.ux.styledJSON(JSON.parse(res.body));
+      ux.styledJSON(JSON.parse(res.body));
     } catch (err) {
       // If response body isn't JSON, just print it to stdout.
       this.log(res.body);
