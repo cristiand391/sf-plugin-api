@@ -23,7 +23,11 @@ export default class EnvApi extends SfCommand<void> {
   public static examples = messages.getMessages('examples');
   public static enableJsonFlag = false;
   public static flags = {
-    'target-org': Flags.requiredOrg(),
+    'target-org': Flags.requiredOrg({
+      // TODO: this is already set in the org flag but getting a wrong type if not set here.
+      // Fix flag types in oclif.
+      required: true,
+    }),
     include: Flags.boolean({
       char: 'i',
       summary: messages.getMessage('flags.include.summary'),
@@ -53,7 +57,7 @@ export default class EnvApi extends SfCommand<void> {
   };
 
   private static getHeaders(keyValPair: string[]): Headers {
-    const headers = {};
+    const headers: { [key: string]: string } = {};
 
     for (const header of keyValPair) {
       const split = header.split(':');
@@ -71,12 +75,6 @@ export default class EnvApi extends SfCommand<void> {
   public async run(): Promise<void> {
     const { flags, args } = await this.parse(EnvApi);
 
-    let body: Buffer;
-
-    if (flags.body) {
-      body = await readFile(flags.body);
-    }
-
     const org = flags['target-org'];
 
     await org.refreshAuth();
@@ -90,7 +88,7 @@ export default class EnvApi extends SfCommand<void> {
         Authorization: `Bearer ${org.getConnection().getConnectionOptions().accessToken}`,
         ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
       },
-      body: flags.method === 'GET' ? undefined : body,
+      body: flags.method === 'GET' ? undefined : flags.body ? await readFile(flags.body) : undefined,
       throwHttpErrors: false,
     });
 
