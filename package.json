@@ -51,8 +51,7 @@
   "files": [
     "/lib",
     "/messages",
-    "/oclif.manifest.json",
-    "/schemas"
+    "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/cristiand391/sf-plugin-api",
   "keywords": [
@@ -83,11 +82,10 @@
     "format": "prettier --write '+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json'",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:json-schema && yarn test:command-reference",
+    "posttest": "yarn lint && yarn test:deprecation-policy",
     "prepack": "oclif manifest .",
     "test": "mocha test/**/*.test.ts",
-    "test:deprecation-policy": "./bin/dev snapshot:compare",
-    "test:json-schema": "./bin/dev schema:compare",
+    "test:deprecation-policy": "./bin/dev snapshot compare",
     "version": "oclif readme"
   },
   "publishConfig": {
