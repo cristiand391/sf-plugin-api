@@ -17,15 +17,11 @@
     "proxy-from-env": "^1.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.3.0",
-    "@commitlint/config-conventional": "^17.3.0",
-    "@oclif/plugin-command-snapshot": "^3.3.6",
-    "@salesforce/cli-plugins-testkit": "^3.2.3",
-    "@salesforce/dev-config": "^3.1.0",
-    "@salesforce/prettier-config": "^0.0.2",
+    "@oclif/plugin-command-snapshot": "^3.3.10",
     "@salesforce/ts-sinon": "1.4.0",
     "@swc/core": "^1.3.11",
     "@types/chai": "^4.3.4",
+    "@types/inquirer": "^9.0.3",
     "@types/mocha": "^10.0.1",
     "@types/proxy-from-env": "^1.0.1",
     "@types/sinon": "^10.0.13",
@@ -38,26 +34,24 @@
     "eslint-config-salesforce-typescript": "^1.1.1",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsdoc": "^39.3.6",
-    "eslint-plugin-sf-plugin": "^1.1.3",
-    "husky": "^8.0.2",
+    "eslint-plugin-sf-plugin": "^1.14.0",
     "mocha": "^9.2.2",
     "nock": "^13.3.0",
-    "nyc": "^15.1.0",
-    "oclif": "^2.7.0",
-    "prettier": "^2.7.1",
+    "oclif": "^3.7.3",
+    "prettier": "^2.8.7",
     "shx": "0.3.4",
-    "sinon": "10.0.0",
+    "sinon": "^15.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "wireit": "^0.9.5"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "/lib",
     "/messages",
-    "/oclif.manifest.json",
-    "/schemas"
+    "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/cristiand391/sf-plugin-api",
   "keywords": [
@@ -82,20 +76,97 @@
   },
   "repository": "https://github.com/cristiand391/sf-plugin-api",
   "scripts": {
-    "build": "yarn clean && yarn compile",
-    "clean": "shx rm -rf ./tmp,lib,test_session*",
-    "compile": "tsc -p . --pretty",
-    "format": "prettier --write '+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json'",
-    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "build": "wireit",
+    "clean": "shx rm -rf tmp lib test_session*",
+    "clean-all": "yarn clean && shx rm -rf node_modules .wireit *.tsbuildinfo .eslintcache",
+    "compile": "wireit",
+    "format": "wireit",
+    "lint": "wireit",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:json-schema && yarn test:command-reference",
     "prepack": "oclif manifest .",
-    "prepare": "husky install",
-    "test": "nyc mocha \"test/**/*.test.ts\"",
-    "test:deprecation-policy": "./bin/dev snapshot:compare",
-    "test:json-schema": "./bin/dev schema:compare",
-    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
+    "test": "wireit",
     "version": "oclif readme"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "compile",
+        "lint"
+      ]
+    },
+    "compile": {
+      "command": "tsc -p . --pretty --incremental",
+      "files": [
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        "messages/**"
+      ],
+      "output": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "format": {
+      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "command-snapshot.json",
+        ".prettier*"
+      ],
+      "output": []
+    },
+    "lint": {
+      "command": "eslint src test --color --cache --cache-location .eslintcache",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "messages/**",
+        "**/.eslint*",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test": {
+      "dependencies": [
+        "test:compile",
+        "test:run",
+        "test:deprecation-policy",
+        "lint"
+      ]
+    },
+    "test:deprecation-policy": {
+      "command": "\"./bin/dev\" snapshot:compare",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": [],
+      "dependencies": [
+        "compile"
+      ]
+    },
+    "test:compile": {
+      "command": "tsc -p \"./test\" --pretty",
+      "files": [
+        "test/**/*.ts",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test:run": {
+      "command": "mocha \"test/**/*.test.ts\"",
+      "env": {
+        "FORCE_COLOR": "2"
+      },
+      "files": [
+        "test/**/*.ts",
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        ".mocha*"
+      ],
+      "output": []
+    }
   },
   "publishConfig": {
     "access": "public"
