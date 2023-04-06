@@ -23,6 +23,9 @@ export default class EnvApi extends SfCommand<void> {
   public static examples = messages.getMessages('examples');
   public static enableJsonFlag = false;
   public static flags = {
+    // FIXME: getting a false positive from this eslint rule.
+    // summary is already set in the org flag.
+    // eslint-disable-next-line sf-plugin/flag-summary
     'target-org': Flags.requiredOrg({
       // TODO: this is already set in the org flag but getting a wrong type if not set here.
       // Fix flag types in oclif.
