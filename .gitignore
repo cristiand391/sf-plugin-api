@@ -14,6 +14,11 @@ yarn-error.log
 # compile source
 lib
 
+# cache
+*.tsbuildinfo
+.eslintcache
+.wireit
+
 # test artifacts
 test_session*
 
