@@ -74,11 +74,13 @@ describe('env api', () => {
       ]);
     } catch (e) {
       const err = e as SfError;
-      expect(err.message).to.equal('Failed to parse HTTP header: "Accept application/xml".')
-      if (!err.actions || err.actions?.length===0) {
-        expect.fail('Missing action message for invalid header error.')
+      expect(err.message).to.equal('Failed to parse HTTP header: "Accept application/xml".');
+      if (!err.actions || err.actions?.length === 0) {
+        expect.fail('Missing action message for invalid header error.');
       }
-      expect(err.actions[0]).to.equal('Make sure the header is in a "key:value" format, e.g. "Accept: application/json"')
+      expect(err.actions[0]).to.equal(
+        'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"'
+      );
     }
   });
 });
