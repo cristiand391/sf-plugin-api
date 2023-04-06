@@ -6,6 +6,7 @@
  */
 
 import { readFile } from 'node:fs/promises';
+import { EOL } from 'node:os'
 import got, { Headers, Method } from 'got';
 import * as chalk from 'chalk';
 import * as ProxyAgent from 'proxy-agent';
@@ -124,12 +125,12 @@ export default class EnvApi extends SfCommand<void> {
 
     // Print HTTP response status and headers.
     if (flags.include) {
-      let httpInfo = `HTTP/${res.httpVersion} ${res.statusCode} \n`;
+      let httpInfo = `HTTP/${res.httpVersion} ${res.statusCode} ${EOL}`;
 
       for (const [header] of Object.entries(res.headers)) {
         httpInfo += `${chalk.blue.bold(header)}: ${
           res.headers[header] as string
-        }\n`;
+        }${EOL}`;
       }
       this.log(httpInfo);
     }
