@@ -18,11 +18,11 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@cristiand391/sf-plugin-api', 'env.api');
 
 export default class EnvApi extends SfCommand<void> {
-  public static summary = messages.getMessage('summary');
-  public static description = messages.getMessage('description');
-  public static examples = messages.getMessages('examples');
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessages('examples');
   public static enableJsonFlag = false;
-  public static flags = {
+  public static readonly flags = {
     // FIXME: getting a false positive from this eslint rule.
     // summary is already set in the org flag.
     // eslint-disable-next-line sf-plugin/flag-summary
@@ -88,6 +88,8 @@ export default class EnvApi extends SfCommand<void> {
       agent: { https: ProxyAgent(getProxyForUrl(url)) },
       method: flags.method,
       headers: {
+        // we don't care about apiVersion here, just need to get the access token.
+        // eslint-disable-next-line sf-plugin/get-connection-with-version
         Authorization: `Bearer ${org.getConnection().getConnectionOptions().accessToken}`,
         ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
       },
