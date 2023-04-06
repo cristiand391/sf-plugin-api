@@ -15,7 +15,10 @@ import { SfError, Messages, Org } from '@salesforce/core';
 import { Args, ux } from '@oclif/core';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@cristiand391/sf-plugin-api', 'env.api');
+const messages = Messages.loadMessages(
+  '@cristiand391/sf-plugin-api',
+  'env.api'
+);
 
 export default class EnvApi extends SfCommand<void> {
   public static readonly summary = messages.getMessage('summary');
@@ -37,7 +40,16 @@ export default class EnvApi extends SfCommand<void> {
       default: false,
     }),
     method: Flags.custom<Method>({
-      options: ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE'],
+      options: [
+        'GET',
+        'POST',
+        'PUT',
+        'PATCH',
+        'HEAD',
+        'DELETE',
+        'OPTIONS',
+        'TRACE',
+      ],
       summary: messages.getMessage('flags.method.summary'),
       char: 'X',
       default: 'GET',
@@ -65,9 +77,13 @@ export default class EnvApi extends SfCommand<void> {
     for (const header of keyValPair) {
       const split = header.split(':');
       if (split.length !== 2) {
-        throw new SfError(messages.getMessage('errors.invalid-http-header', [header]), '', [
-          'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
-        ]);
+        throw new SfError(
+          messages.getMessage('errors.invalid-http-header', [header]),
+          '',
+          [
+            'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
+          ]
+        );
       }
       headers[split[0]] = split[1].trim();
     }
@@ -82,7 +98,9 @@ export default class EnvApi extends SfCommand<void> {
 
     await org.refreshAuth();
 
-    const url = `${org.getField<string>(Org.Fields.INSTANCE_URL)}/${args.endpoint}`;
+    const url = `${org.getField<string>(Org.Fields.INSTANCE_URL)}/${
+      args.endpoint
+    }`;
 
     const res = await got(url, {
       agent: { https: ProxyAgent(getProxyForUrl(url)) },
@@ -90,10 +108,17 @@ export default class EnvApi extends SfCommand<void> {
       headers: {
         // we don't care about apiVersion here, just need to get the access token.
         // eslint-disable-next-line sf-plugin/get-connection-with-version
-        Authorization: `Bearer ${org.getConnection().getConnectionOptions().accessToken}`,
+        Authorization: `Bearer ${
+          org.getConnection().getConnectionOptions().accessToken
+        }`,
         ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
       },
-      body: flags.method === 'GET' ? undefined : flags.body ? await readFile(flags.body) : undefined,
+      body:
+        flags.method === 'GET'
+          ? undefined
+          : flags.body
+          ? await readFile(flags.body)
+          : undefined,
       throwHttpErrors: false,
     });
 
@@ -102,7 +127,9 @@ export default class EnvApi extends SfCommand<void> {
       let httpInfo = `HTTP/${res.httpVersion} ${res.statusCode} \n`;
 
       for (const [header] of Object.entries(res.headers)) {
-        httpInfo += `${chalk.blue.bold(header)}: ${res.headers[header] as string}\n`;
+        httpInfo += `${chalk.blue.bold(header)}: ${
+          res.headers[header] as string
+        }\n`;
       }
       this.log(httpInfo);
     }

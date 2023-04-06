@@ -8,7 +8,9 @@ import EnvApi from '../../../src/commands/env/api';
 
 describe('env api', () => {
   const $$ = new TestContext();
-  const testOrg = new MockTestOrgData('1234', { username: 'cdominguez@sf-hub.com' });
+  const testOrg = new MockTestOrgData('1234', {
+    username: 'cdominguez@sf-hub.com',
+  });
 
   let stdoutSpy: sinon.SinonSpy;
 
@@ -29,9 +31,15 @@ describe('env api', () => {
       },
     };
 
-    nock(testOrg.instanceUrl).get('/services/data/v56.0/limits').reply(200, orgLimitsResponse);
+    nock(testOrg.instanceUrl)
+      .get('/services/data/v56.0/limits')
+      .reply(200, orgLimitsResponse);
 
-    await EnvApi.run(['services/data/v56.0/limits', '--target-org', 'cdominguez@sf-hub.com']);
+    await EnvApi.run([
+      'services/data/v56.0/limits',
+      '--target-org',
+      'cdominguez@sf-hub.com',
+    ]);
 
     const output = stripAnsi(stdoutSpy.args.flat().join(''));
 
@@ -55,7 +63,13 @@ describe('env api', () => {
       .get('/services/data')
       .reply(200, xmlRes);
 
-    await EnvApi.run(['services/data', '--header', 'Accept: application/xml', '--target-org', 'cdominguez@sf-hub.com']);
+    await EnvApi.run([
+      'services/data',
+      '--header',
+      'Accept: application/xml',
+      '--target-org',
+      'cdominguez@sf-hub.com',
+    ]);
 
     const output = stripAnsi(stdoutSpy.args.flat().join(''));
 
@@ -74,7 +88,9 @@ describe('env api', () => {
       ]);
     } catch (e) {
       const err = e as SfError;
-      expect(err.message).to.equal('Failed to parse HTTP header: "Accept application/xml".');
+      expect(err.message).to.equal(
+        'Failed to parse HTTP header: "Accept application/xml".'
+      );
       if (!err.actions || err.actions?.length === 0) {
         expect.fail('Missing action message for invalid header error.');
       }
