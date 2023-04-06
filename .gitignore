@@ -15,11 +15,6 @@ yarn-error.log
 lib
 
 # test artifacts
-*xunit.xml
-*checkstyle.xml
-*unitcoverage
-.nyc_output
-coverage
 test_session*
 
 # generated docs

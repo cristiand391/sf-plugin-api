@@ -38,7 +38,6 @@
     "eslint-plugin-sf-plugin": "^1.1.3",
     "mocha": "^9.2.2",
     "nock": "^13.3.0",
-    "nyc": "^15.1.0",
     "oclif": "^2.7.0",
     "prettier": "^2.7.1",
     "shx": "0.3.4",
@@ -86,10 +85,9 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:json-schema && yarn test:command-reference",
     "prepack": "oclif manifest .",
-    "test": "nyc mocha \"test/**/*.test.ts\"",
+    "test": "mocha test/**/*.test.ts",
     "test:deprecation-policy": "./bin/dev snapshot:compare",
     "test:json-schema": "./bin/dev schema:compare",
-    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "version": "oclif readme"
   },
   "publishConfig": {
