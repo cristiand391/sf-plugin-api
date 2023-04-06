@@ -77,7 +77,8 @@
   "repository": "https://github.com/cristiand391/sf-plugin-api",
   "scripts": {
     "build": "wireit",
-    "clean": "shx rm -rf ./tmp,lib,test_session*",
+    "clean": "shx rm -rf tmp lib test_session*",
+    "clean-all": "yarn clean && shx rm -rf node_modules .wireit *.tsbuildinfo .eslintcache",
     "compile": "wireit",
     "format": "wireit",
     "lint": "wireit",
