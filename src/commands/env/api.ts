@@ -107,9 +107,9 @@ export default class EnvApi extends SfCommand<void> {
       agent: { https: ProxyAgent(getProxyForUrl(url)) },
       method: flags.method,
       headers: {
-        // we don't care about apiVersion here, just need to get the access token.
-        // eslint-disable-next-line sf-plugin/get-connection-with-version
         Authorization: `Bearer ${
+          // we don't care about apiVersion here, just need to get the access token.
+          // eslint-disable-next-line sf-plugin/get-connection-with-version
           org.getConnection().getConnectionOptions().accessToken
         }`,
         ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
