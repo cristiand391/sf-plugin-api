@@ -1,28 +1,20 @@
-import * as path from 'path';
 import nock = require('nock');
 import { TestContext, MockTestOrgData } from '@salesforce/core/lib/testSetup';
-import { Config } from '@oclif/core';
+import { SfError } from '@salesforce/core'
 import { expect } from 'chai';
 import stripAnsi = require('strip-ansi');
+import { stdout } from '@oclif/core'
 import EnvApi from '../../../src/commands/env/api';
 
 describe('env api', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData('1234', { username: 'cdominguez@sf-hub.com' });
-  let config: Config;
 
   let stdoutSpy: sinon.SinonSpy;
-  let stderrSpy: sinon.SinonSpy;
-
-  before(async () => {
-    config = new Config({ root: path.resolve(__dirname, '../../..') });
-    await config.load();
-  });
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
-    stdoutSpy = $$.SANDBOX.stub(process.stdout, 'write');
-    stderrSpy = $$.SANDBOX.stub(process.stderr, 'write');
+    stdoutSpy = $$.SANDBOX.stub(stdout, 'write');
   });
 
   afterEach(() => {
@@ -39,14 +31,11 @@ describe('env api', () => {
 
     nock(testOrg.instanceUrl).get('/services/data/v56.0/limits').reply(200, orgLimitsResponse);
 
-    const cmd = new EnvApi(['services/data/v56.0/limits', '--target-org', 'cdominguez@sf-hub.com'], config);
+    await EnvApi.run(['services/data/v56.0/limits', '--target-org', 'cdominguez@sf-hub.com'])
 
-    // eslint-disable-next-line no-underscore-dangle
-    await cmd._run();
+    const output = stripAnsi(stdoutSpy.args.flat().join(''));
 
-    const stdout = stripAnsi(stdoutSpy.args.flat().join(''));
-
-    expect(JSON.parse(stdout)).to.deep.equal(orgLimitsResponse);
+    expect(JSON.parse(output)).to.deep.equal(orgLimitsResponse);
   });
 
   it('should set "Accept" HTTP header', async () => {
@@ -66,31 +55,21 @@ describe('env api', () => {
       .get('/services/data')
       .reply(200, xmlRes);
 
-    const cmd = new EnvApi(
-      ['services/data', '--header', 'Accept: application/xml', '--target-org', 'cdominguez@sf-hub.com'],
-      config
-    );
+    await EnvApi.run(['services/data', '--header', 'Accept: application/xml', '--target-org', 'cdominguez@sf-hub.com'])
 
-    // eslint-disable-next-line no-underscore-dangle
-    await cmd._run();
-
-    const stdout = stripAnsi(stdoutSpy.args.flat().join(''));
+    const output = stripAnsi(stdoutSpy.args.flat().join(''));
 
     // https://github.com/oclif/core/blob/ff76400fb0bdfc4be0fa93056e86183b9205b323/src/command.ts#L248-L253
-    expect(stdout).to.equal(xmlRes + '\n');
+    expect(output).to.equal(xmlRes + '\n');
   });
 
   it('should validate HTTP headers are in a "key:value" format', async () => {
-    const cmd = new EnvApi(
-      ['services/data', '--header', 'Accept application/xml', '--target-org', 'cdominguez@sf-hub.com'],
-      config
-    );
-
-    // eslint-disable-next-line no-underscore-dangle
-    await cmd._run();
-
-    const stderr = stripAnsi(stderrSpy.args.flat().join(''));
-
-    expect(stderr).to.include('Make sure the header is in a "key:value" format, e.g. "Accept: application/json"');
+    try {
+      await EnvApi.run(['services/data', '--header', 'Accept application/xml', '--target-org', 'cdominguez@sf-hub.com'])
+    } catch(e) {
+      const err = e as SfError;
+      expect(err.message).to.equal('Failed to parse HTTP header: "Accept application/xml".')
+      expect(err.actions[0]).to.equal('Make sure the header is in a "key:value" format, e.g. "Accept: application/json"')
+    }
   });
 });
