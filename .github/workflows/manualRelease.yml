@@ -19,6 +19,7 @@ jobs:
           github-token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
           # always do the release, even if there are no semantic commits
           skip-on-empty: false
+          output-file: 'CHANGELOG.md'
           tag-prefix: ''
       - uses: notiz-dev/github-action-json-property@2192e246737701f108a4571462b76c75e7376216
         id: packageVersion
