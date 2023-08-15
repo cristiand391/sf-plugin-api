@@ -6,11 +6,10 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { EOL } from 'node:os'
+import { EOL } from 'node:os';
 import got, { Headers, Method } from 'got';
 import * as chalk from 'chalk';
-import * as ProxyAgent from 'proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import { ProxyAgent } from 'proxy-agent';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { SfError, Messages, Org } from '@salesforce/core';
 import { Args, ux } from '@oclif/core';
@@ -18,7 +17,7 @@ import { Args, ux } from '@oclif/core';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages(
   '@cristiand391/sf-plugin-api',
-  'env.api'
+  'env.api',
 );
 
 export default class EnvApi extends SfCommand<void> {
@@ -83,7 +82,7 @@ export default class EnvApi extends SfCommand<void> {
           '',
           [
             'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
-          ]
+          ],
         );
       }
       headers[split[0]] = split[1].trim();
@@ -104,7 +103,7 @@ export default class EnvApi extends SfCommand<void> {
     }`;
 
     const res = await got(url, {
-      agent: { https: ProxyAgent(getProxyForUrl(url)) },
+      agent: { https: new ProxyAgent() },
       method: flags.method,
       headers: {
         Authorization: `Bearer ${
