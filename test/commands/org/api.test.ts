@@ -4,9 +4,9 @@ import { SfError } from '@salesforce/core';
 import { expect } from 'chai';
 import stripAnsi = require('strip-ansi');
 import { stdout } from '@oclif/core';
-import EnvApi from '../../../src/commands/env/api';
+import { OrgApi }from '../../../src/commands/org/api';
 
-describe('env api', () => {
+describe('org api', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData('1234', {
     username: 'cdominguez@sf-hub.com',
@@ -35,7 +35,7 @@ describe('env api', () => {
       .get('/services/data/v56.0/limits')
       .reply(200, orgLimitsResponse);
 
-    await EnvApi.run([
+    await OrgApi.run([
       'services/data/v56.0/limits',
       '--target-org',
       'cdominguez@sf-hub.com',
@@ -63,7 +63,7 @@ describe('env api', () => {
       .get('/services/data')
       .reply(200, xmlRes);
 
-    await EnvApi.run([
+    await OrgApi.run([
       'services/data',
       '--header',
       'Accept: application/xml',
@@ -79,7 +79,7 @@ describe('env api', () => {
 
   it('should validate HTTP headers are in a "key:value" format', async () => {
     try {
-      await EnvApi.run([
+      await OrgApi.run([
         'services/data',
         '--header',
         'Accept application/xml',

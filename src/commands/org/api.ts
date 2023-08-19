@@ -20,7 +20,7 @@ const messages = Messages.loadMessages(
   'env.api',
 );
 
-export default class EnvApi extends SfCommand<void> {
+export class OrgApi extends SfCommand<void> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -92,7 +92,7 @@ export default class EnvApi extends SfCommand<void> {
   }
 
   public async run(): Promise<void> {
-    const { flags, args } = await this.parse(EnvApi);
+    const { flags, args } = await this.parse(OrgApi);
 
     const org = flags['target-org'];
 
@@ -111,7 +111,7 @@ export default class EnvApi extends SfCommand<void> {
           // eslint-disable-next-line sf-plugin/get-connection-with-version
           org.getConnection().getConnectionOptions().accessToken
         }`,
-        ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
+        ...(flags.header ? OrgApi.getHeaders(flags.header) : {}),
       },
       body:
         flags.method === 'GET'
