@@ -26,6 +26,7 @@ export class OrgApi extends SfCommand<void> {
       // TODO: this is already set in the org flag but getting a wrong type if not set here.
       // Fix flag types in oclif.
       required: true,
+      helpValue: 'username'
     }),
     include: Flags.boolean({
       char: 'i',
@@ -49,11 +50,13 @@ export class OrgApi extends SfCommand<void> {
     })(),
     header: Flags.string({
       summary: messages.getMessage('flags.header.summary'),
+      helpValue: 'key:value',
       char: 'H',
       multiple: true,
     }),
     body: Flags.file({
       summary: messages.getMessage('flags.body.summary'),
+      helpValue: 'file',
     }),
   };
 
