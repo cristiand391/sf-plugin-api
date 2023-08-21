@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2022, salesforce.com, inc.
- * All rights reserved.
- * Licensed under the BSD 3-Clause license.
- * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
- */
-
 import { readFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
 import got, { Headers, Method } from 'got';
