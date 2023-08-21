@@ -17,7 +17,7 @@ import { Args, ux } from '@oclif/core';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages(
   '@cristiand391/sf-plugin-api',
-  'env.api',
+  'org.api',
 );
 
 export class OrgApi extends SfCommand<void> {
