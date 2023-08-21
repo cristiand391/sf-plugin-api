@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2022, salesforce.com, inc.
- * All rights reserved.
- * Licensed under the BSD 3-Clause license.
- * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
- */
-
 import { readFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
 import got, { Headers, Method } from 'got';
@@ -17,10 +10,10 @@ import { Args, ux } from '@oclif/core';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages(
   '@cristiand391/sf-plugin-api',
-  'env.api',
+  'org.api',
 );
 
-export default class EnvApi extends SfCommand<void> {
+export class OrgApi extends SfCommand<void> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -33,6 +26,7 @@ export default class EnvApi extends SfCommand<void> {
       // TODO: this is already set in the org flag but getting a wrong type if not set here.
       // Fix flag types in oclif.
       required: true,
+      helpValue: 'username'
     }),
     include: Flags.boolean({
       char: 'i',
@@ -56,11 +50,13 @@ export default class EnvApi extends SfCommand<void> {
     })(),
     header: Flags.string({
       summary: messages.getMessage('flags.header.summary'),
+      helpValue: 'key:value',
       char: 'H',
       multiple: true,
     }),
     body: Flags.file({
       summary: messages.getMessage('flags.body.summary'),
+      helpValue: 'file',
     }),
   };
 
@@ -92,7 +88,7 @@ export default class EnvApi extends SfCommand<void> {
   }
 
   public async run(): Promise<void> {
-    const { flags, args } = await this.parse(EnvApi);
+    const { flags, args } = await this.parse(OrgApi);
 
     const org = flags['target-org'];
 
@@ -111,7 +107,7 @@ export default class EnvApi extends SfCommand<void> {
           // eslint-disable-next-line sf-plugin/get-connection-with-version
           org.getConnection().getConnectionOptions().accessToken
         }`,
-        ...(flags.header ? EnvApi.getHeaders(flags.header) : {}),
+        ...(flags.header ? OrgApi.getHeaders(flags.header) : {}),
       },
       body:
         flags.method === 'GET'
