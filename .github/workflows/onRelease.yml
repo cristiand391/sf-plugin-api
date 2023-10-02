@@ -1,34 +1,28 @@
 name: publish
 
 on:
+  workflow_dispatch:
   release:
     types: [released]
-  # support manual release in case something goes wrong and needs to be repeated or tested
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: tag that needs to publish
-        type: string
-        required: true
+
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Release
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+      # https://github.com/actions/setup-node/releases/tag/v3.8.1
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d
         with:
-          ref: ${{ inputs.githubTag }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.nodeVersion }}
+          node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
           cache: yarn
-      - run: yarn install --network-timeout 600000
-      - run: yarn build
-      - run: npm install --global @salesforce/plugin-release-management@3.7.3
-      - run: |
-          sf-release npm:package:release \
-            --githubtag ${{ github.event.release.tag_name || inputs.tag || 'latest' }} \
-            --npmtag ${{ inputs.tag || 'latest' }}
-            --no-install
+      - name: Install dependencies
+        run: yarn install --network-timeout 600000
+      - name: Build
+        run: yarn build
+      - name: Publish to npm
+        run: npm publish --access public
         env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

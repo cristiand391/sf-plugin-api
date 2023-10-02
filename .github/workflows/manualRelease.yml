@@ -5,31 +5,20 @@ on:
 
 jobs:
   release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
       - name: Conventional Changelog Action
         id: changelog
-        uses: TriPSs/conventional-changelog-action@d360fad3a42feca6462f72c97c165d60a02d4bf2
-        # overriding some of the basic behaviors to just get the changelog
+        # https://github.com/TriPSs/conventional-changelog-action/releases/tag/v4.1.1
+        uses: TriPSs/conventional-changelog-action@05fc06b05ff372d7a3890bfe625d42a0d97844de
         with:
-          git-user-name: Cristian Dominguez
-          github-token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
-          # always do the release, even if there are no semantic commits
-          skip-on-empty: false
-          output-file: 'CHANGELOG.md'
           tag-prefix: ''
-      - uses: notiz-dev/github-action-json-property@2192e246737701f108a4571462b76c75e7376216
-        id: packageVersion
-        with:
-          path: 'package.json'
-          prop_path: 'version'
+          skip-on-empty: false
       - name: Create Github Release
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.packageVersion.outputs.prop }}
-          release_name: ${{ steps.packageVersion.outputs.prop }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create ${{ steps.changelog.outputs.tag }} --notes-file CHANGELOG.md
