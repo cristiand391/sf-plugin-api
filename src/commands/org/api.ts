@@ -4,19 +4,27 @@ import got, { Headers, Method } from 'got';
 import * as chalk from 'chalk';
 import { ProxyAgent } from 'proxy-agent';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
-import { SfError, Messages, Org } from '@salesforce/core';
+import { SfError, Org } from '@salesforce/core';
 import { Args, ux } from '@oclif/core';
 
-Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages(
-  '@cristiand391/sf-plugin-api',
-  'org.api',
-);
-
 export class OrgApi extends SfCommand<void> {
-  public static readonly summary = messages.getMessage('summary');
-  public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessages('examples');
+  public static readonly summary =
+    'Makes an authenticated HTTP request to the Salesforce REST API and prints the response.';
+  public static readonly description =
+    'You must specify a Salesforce org to use, either with the --target-org flag or by setting your default org with the `target-org` configuration variable.';
+  public static readonly examples = [
+    {
+      description: 'List information about limits in your org:',
+      command:
+        "<%= config.bin %> <%= command.id %> 'services/data/v56.0/limits' --target-org my-org",
+    },
+    {
+      description:
+        'Get response in XML format by specifying the "Accept" HTTP header:',
+      command:
+        "<%= config.bin %> <%= command.id %> 'services/data/v56.0/limits' --target-org my-org --header 'Accept: application/xml'",
+    },
+  ];
   public static enableJsonFlag = false;
   public static readonly flags = {
     // FIXME: getting a false positive from this eslint rule.
@@ -26,11 +34,11 @@ export class OrgApi extends SfCommand<void> {
       // TODO: this is already set in the org flag but getting a wrong type if not set here.
       // Fix flag types in oclif.
       required: true,
-      helpValue: 'username'
+      helpValue: 'username',
     }),
     include: Flags.boolean({
       char: 'i',
-      summary: messages.getMessage('flags.include.summary'),
+      summary: 'Include HTTP response status and headers in the output.',
       default: false,
     }),
     method: Flags.custom<Method>({
@@ -44,18 +52,18 @@ export class OrgApi extends SfCommand<void> {
         'OPTIONS',
         'TRACE',
       ],
-      summary: messages.getMessage('flags.method.summary'),
+      summary: 'The HTTP method for the request.',
       char: 'X',
       default: 'GET',
     })(),
     header: Flags.string({
-      summary: messages.getMessage('flags.header.summary'),
+      summary: 'HTTP header in "key:value" format.',
       helpValue: 'key:value',
       char: 'H',
       multiple: true,
     }),
     body: Flags.file({
-      summary: messages.getMessage('flags.body.summary'),
+      summary: 'The file to use as the body for the request.',
       helpValue: 'file',
     }),
   };
@@ -73,13 +81,9 @@ export class OrgApi extends SfCommand<void> {
     for (const header of keyValPair) {
       const split = header.split(':');
       if (split.length !== 2) {
-        throw new SfError(
-          messages.getMessage('errors.invalid-http-header', [header]),
-          '',
-          [
-            'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
-          ],
-        );
+        throw new SfError(`Failed to parse HTTP header: "${header}".`, '', [
+          'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
+        ]);
       }
       headers[split[0]] = split[1].trim();
     }
