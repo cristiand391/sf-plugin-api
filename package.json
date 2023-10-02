@@ -8,12 +8,12 @@
   },
   "bugs": "https://github.com/cristiand391/sf-plugin-api/issues",
   "dependencies": {
-    "@oclif/core": "^2.11.8",
-    "@salesforce/core": "^5.2.1",
-    "@salesforce/sf-plugins-core": "^3.1.15",
+    "@oclif/core": "^2.15.0",
+    "@salesforce/core": "^5.3.3",
+    "@salesforce/sf-plugins-core": "^3.1.27",
     "chalk": "^4",
-    "got": "11.8.5",
-    "proxy-agent": "^6.3.0"
+    "got": "11.8.6",
+    "proxy-agent": "^6.3.1"
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^4.0.12",
