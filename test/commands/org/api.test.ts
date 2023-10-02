@@ -4,7 +4,7 @@ import { SfError } from '@salesforce/core';
 import { expect } from 'chai';
 import stripAnsi = require('strip-ansi');
 import { stdout } from '@oclif/core';
-import { OrgApi }from '../../../src/commands/org/api';
+import { OrgApi } from '../../../src/commands/org/api';
 
 describe('org api', () => {
   const $$ = new TestContext();
