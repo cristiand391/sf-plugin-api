@@ -1,7 +1,7 @@
 {
   "name": "@cristiand391/sf-plugin-api",
   "description": "A Salesforce CLI plugin to interact with the Salesforce APIs.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Cristian Dominguez",
     "url": "https://github.com/cristiand391"
