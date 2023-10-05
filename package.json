@@ -69,6 +69,7 @@
     "commands": "./lib/commands",
     "bin": "sf",
     "topicSeparator": " ",
+    "repositoryPrefix": "<%- repo %>/blob/<%- version %>/<%- commandPath %>",
     "devPlugins": [
       "@oclif/plugin-command-snapshot"
     ]
