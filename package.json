@@ -85,6 +85,7 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "oclif manifest .",
     "test": "wireit",
+    "test:run": "wireit",
     "version": "oclif readme"
   },
   "wireit": {

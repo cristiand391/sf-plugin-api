@@ -1,10 +1,6 @@
 {
-  "node-option": [
-    "loader=ts-node/esm"
-  ],
   "require": "ts-node/register",
-  "watch-extensions": "ts",
-  "watch-files": ["src", "test"],
+  "loader": "ts-node/esm",
   "recursive": true,
   "reporter": "spec",
   "timeout": 5000
