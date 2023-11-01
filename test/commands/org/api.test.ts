@@ -1,10 +1,9 @@
 import nock = require('nock');
-import { TestContext, MockTestOrgData } from '@salesforce/core/lib/testSetup';
+import { TestContext, MockTestOrgData } from '@salesforce/core/lib/testSetup.js';
 import { SfError } from '@salesforce/core';
 import { expect } from 'chai';
-import stripAnsi = require('strip-ansi');
-import { stdout } from '@oclif/core';
-import { OrgApi } from '../../../src/commands/org/api';
+import stripAnsi from 'strip-ansi';
+import { OrgApi } from '../../../src/commands/org/api.js';
 
 describe('org api', () => {
   const $$ = new TestContext();
@@ -16,7 +15,7 @@ describe('org api', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
-    stdoutSpy = $$.SANDBOX.stub(stdout, 'write');
+    stdoutSpy = $$.SANDBOX.stub(process.stdout, 'write');
   });
 
   afterEach(() => {

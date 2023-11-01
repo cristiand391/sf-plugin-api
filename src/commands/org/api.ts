@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
 import got, { Headers, Method } from 'got';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { ProxyAgent } from 'proxy-agent';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { SfError, Org } from '@salesforce/core';

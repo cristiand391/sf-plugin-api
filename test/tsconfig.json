@@ -1,6 +1,7 @@
 {
   "include": ["./**/*.ts"],
   "compilerOptions": {
+    "module": "nodenext",
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,

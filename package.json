@@ -6,13 +6,14 @@
     "name": "Cristian Dominguez",
     "url": "https://github.com/cristiand391"
   },
+  "type": "module",
   "bugs": "https://github.com/cristiand391/sf-plugin-api/issues",
   "dependencies": {
-    "@oclif/core": "^2.15.0",
-    "@salesforce/core": "^5.3.3",
-    "@salesforce/sf-plugins-core": "^3.1.27",
-    "chalk": "^4",
-    "got": "11.8.6",
+    "@oclif/core": "^3.9.2",
+    "@salesforce/core": "^5.3.16",
+    "@salesforce/sf-plugins-core": "^4.0.0",
+    "chalk": "^5.3.0",
+    "got": "^13.0.0",
     "proxy-agent": "^6.3.1"
   },
   "devDependencies": {
@@ -23,8 +24,8 @@
     "@types/inquirer": "^9.0.3",
     "@types/mocha": "^10.0.1",
     "@types/sinon": "^10.0.13",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.1",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
     "chai": "^4.3.6",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
@@ -39,12 +40,13 @@
     "prettier": "^3.0.1",
     "shx": "0.3.4",
     "sinon": "^15.0.3",
+    "strip-ansi": "^7.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4",
+    "typescript": "^5.2.2",
     "wireit": "^0.10.0"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "prettier": {
     "singleQuote": true
@@ -64,7 +66,6 @@
     "sf"
   ],
   "license": "BSD-3-Clause",
-  "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
     "bin": "sf",
@@ -135,7 +136,7 @@
       ]
     },
     "test:deprecation-policy": {
-      "command": "\"./bin/dev\" snapshot:compare",
+      "command": "\"./bin/dev.js\" snapshot:compare",
       "files": [
         "src/**/*.ts"
       ],
