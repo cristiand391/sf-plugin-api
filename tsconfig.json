@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "nodenext",
     "target": "ES2021",
     "lib": ["ES2021"],
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "rootDir": "src",
     "allowSyntheticDefaultImports": true
   },
+  "ts-node": { "esm": true },
   "include": ["./src/**/*.ts"]
 }
