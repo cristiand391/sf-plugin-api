@@ -1,11 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
-import got, { Headers, Method } from 'got';
+import got, { Headers } from 'got';
 import chalk from 'chalk';
 import { ProxyAgent } from 'proxy-agent';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { SfError, Org } from '@salesforce/core';
 import { Args, ux } from '@oclif/core';
+import { fileExists } from '@oclif/core/lib/util/fs.js';
 
 export class OrgApi extends SfCommand<void> {
   public static readonly summary =
@@ -31,9 +32,6 @@ export class OrgApi extends SfCommand<void> {
     // summary is already set in the org flag.
     // eslint-disable-next-line sf-plugin/flag-summary
     'target-org': Flags.requiredOrg({
-      // TODO: this is already set in the org flag but getting a wrong type if not set here.
-      // Fix flag types in oclif.
-      required: true,
       helpValue: 'username',
     }),
     include: Flags.boolean({
@@ -41,7 +39,7 @@ export class OrgApi extends SfCommand<void> {
       summary: 'Include HTTP response status and headers in the output.',
       default: false,
     }),
-    method: Flags.custom<Method>({
+    method: Flags.option({
       options: [
         'GET',
         'POST',
@@ -51,7 +49,7 @@ export class OrgApi extends SfCommand<void> {
         'DELETE',
         'OPTIONS',
         'TRACE',
-      ],
+      ] as const,
       summary: 'The HTTP method for the request.',
       char: 'X',
       default: 'GET',
@@ -62,8 +60,14 @@ export class OrgApi extends SfCommand<void> {
       char: 'H',
       multiple: true,
     }),
-    body: Flags.file({
-      summary: 'The file to use as the body for the request.',
+    body: Flags.string({
+      summary:
+        'The file to use as the body for the request (use "-" to read from standard input).',
+      parse: async (input) => {
+        if (input === '-') return input;
+        await fileExists(input);
+      },
+      allowStdin: true,
       helpValue: 'file',
     }),
   };
@@ -120,6 +124,7 @@ export class OrgApi extends SfCommand<void> {
           ? await readFile(flags.body)
           : undefined,
       throwHttpErrors: false,
+      followRedirect: true,
     });
 
     // Print HTTP response status and headers.
