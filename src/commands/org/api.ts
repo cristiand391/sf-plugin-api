@@ -124,7 +124,7 @@ export class OrgApi extends SfCommand<void> {
           ? await readFile(flags.body)
           : undefined,
       throwHttpErrors: false,
-      followRedirect: true,
+      followRedirect: false,
     });
 
     // Print HTTP response status and headers.
