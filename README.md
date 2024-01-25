@@ -32,8 +32,9 @@ FLAGS
   -X, --method=<option>      [default: GET] The HTTP method for the request.
                              <options: GET|POST|PUT|PATCH|HEAD|DELETE|OPTIONS|TRACE>
   -i, --include              Include HTTP response status and headers in the output.
-  -o, --target-org=username  (required) Username or alias of the target org.
-  --body=file                The file to use as the body for the request.
+  -o, --target-org=username  (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
+      --body=file            The file to use as the body for the request (use "-" to read from standard input).
 
 DESCRIPTION
   Makes an authenticated HTTP request to the Salesforce REST API and prints the response.
