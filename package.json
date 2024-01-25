@@ -17,7 +17,7 @@
     "proxy-agent": "^6.3.1"
   },
   "devDependencies": {
-    "@oclif/plugin-command-snapshot": "^5.0.1",
+    "@oclif/plugin-command-snapshot": "^5.0.6",
     "@types/chai": "^4.3.4",
     "@types/inquirer": "^9.0.3",
     "@types/mocha": "^10.0.1",
@@ -40,7 +40,7 @@
     "shx": "0.3.4",
     "sinon": "^15.0.3",
     "strip-ansi": "^7.1.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "wireit": "^0.10.0"
   },
@@ -136,7 +136,7 @@
       ]
     },
     "test:deprecation-policy": {
-      "command": "ts-node \"./bin/dev.js\" snapshot:compare",
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" snapshot:compare",
       "files": [
         "src/**/*.ts"
       ],
