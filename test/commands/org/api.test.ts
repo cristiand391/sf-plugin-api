@@ -1,5 +1,8 @@
 import nock = require('nock');
-import { TestContext, MockTestOrgData } from '@salesforce/core/lib/testSetup.js';
+import {
+  TestContext,
+  MockTestOrgData,
+} from '@salesforce/core/lib/testSetup.js';
 import { SfError } from '@salesforce/core';
 import { expect } from 'chai';
 import stripAnsi from 'strip-ansi';
@@ -13,6 +16,13 @@ describe('org api', () => {
 
   let stdoutSpy: sinon.SinonSpy;
 
+  const orgLimitsResponse = {
+    ActiveScratchOrgs: {
+      Max: 200,
+      Remaining: 199,
+    },
+  };
+
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
     stdoutSpy = $$.SANDBOX.stub(process.stdout, 'write');
@@ -23,13 +33,6 @@ describe('org api', () => {
   });
 
   it('should request org limits and default to "GET" HTTP method', async () => {
-    const orgLimitsResponse = {
-      ActiveScratchOrgs: {
-        Max: 200,
-        Remaining: 199,
-      },
-    };
-
     nock(testOrg.instanceUrl)
       .get('/services/data/v56.0/limits')
       .reply(200, orgLimitsResponse);
@@ -97,5 +100,23 @@ describe('org api', () => {
         'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
       );
     }
+  });
+
+  it('should not follow redirects', async () => {
+    nock(testOrg.instanceUrl)
+      .get('/services/data/v56.0/limites')
+      .reply(301, orgLimitsResponse, {
+        location: `${testOrg.instanceUrl}/services/data/v56.0/limits`,
+      });
+
+    await OrgApi.run([
+      'services/data/v56.0/limites',
+      '--target-org',
+      'cdominguez@sf-hub.com',
+    ]);
+
+    const output = stripAnsi(stdoutSpy.args.flat().join(''));
+
+    expect(JSON.parse(output)).to.deep.equal(orgLimitsResponse);
   });
 });
