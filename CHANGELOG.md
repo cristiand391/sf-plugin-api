@@ -1,3 +1,13 @@
+# [0.1.0](https://github.com/cristiand391/sf-plugin-api/compare/0.0.2...0.1.0) (2024-01-26)
+
+
+### Features
+
+* `--body` supports reading from STDIN ([#23](https://github.com/cristiand391/sf-plugin-api/issues/23)) ([06ef90d](https://github.com/cristiand391/sf-plugin-api/commit/06ef90dad51fd9ec20097fb8de388ad18b1b2f23))
+* migrate to esm ([#22](https://github.com/cristiand391/sf-plugin-api/issues/22)) ([0941d9c](https://github.com/cristiand391/sf-plugin-api/commit/0941d9caedf1394f433c11f6101fa1584fed20b9))
+
+
+
 ## [0.0.2](https://github.com/cristiand391/sf-plugin-api/compare/0.0.1...0.0.2) (2023-10-02)
 
 
