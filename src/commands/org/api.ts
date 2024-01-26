@@ -6,7 +6,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { SfError, Org } from '@salesforce/core';
 import { Args, ux } from '@oclif/core';
-import { fileExists } from '@oclif/core/lib/util/fs.js';
+import { readStdin } from '@oclif/core/lib/parser/parse.js';
 
 export class OrgApi extends SfCommand<void> {
   public static readonly summary =
@@ -64,10 +64,19 @@ export class OrgApi extends SfCommand<void> {
       summary:
         'The file to use as the body for the request (use "-" to read from standard input).',
       parse: async (input) => {
-        if (input === '-') return input;
-        await fileExists(input);
+        if (input === '-') {
+          const body = await readStdin();
+          if (body) {
+            return body.trim();
+          } else {
+            throw new Error(
+              'Unable to read body: `-` was provided but STDIN is empty.',
+            );
+          }
+        } else {
+          return readFile(input, 'utf8');
+        }
       },
-      allowStdin: true,
       helpValue: 'file',
     }),
   };
@@ -117,12 +126,7 @@ export class OrgApi extends SfCommand<void> {
         }`,
         ...(flags.header ? OrgApi.getHeaders(flags.header) : {}),
       },
-      body:
-        flags.method === 'GET'
-          ? undefined
-          : flags.body
-          ? await readFile(flags.body)
-          : undefined,
+      body: flags.method === 'GET' ? undefined : flags.body,
       throwHttpErrors: false,
       followRedirect: false,
     });
