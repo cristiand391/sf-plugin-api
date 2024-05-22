@@ -1,10 +1,10 @@
 [
   {
-    "command": "org:api",
-    "plugin": "@cristiand391/sf-plugin-api",
-    "flags": ["body", "header", "include", "method", "target-org"],
     "alias": [],
+    "command": "org:api",
+    "flagAliases": [],
     "flagChars": ["H", "X", "i", "o"],
-    "flagAliases": []
+    "flags": ["body", "flags-dir", "header", "include", "method", "target-org"],
+    "plugin": "@cristiand391/sf-plugin-api"
   }
 ]
