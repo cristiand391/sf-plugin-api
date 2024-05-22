@@ -1,8 +1,5 @@
 import nock = require('nock');
-import {
-  TestContext,
-  MockTestOrgData,
-} from '@salesforce/core/lib/testSetup.js';
+import { TestContext, MockTestOrgData } from '@salesforce/core/testSetup';
 import { SfError } from '@salesforce/core';
 import { expect } from 'chai';
 import stripAnsi from 'strip-ansi';
