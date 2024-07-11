@@ -42,3 +42,6 @@ node_modules
 
 oclif.manifest.json
 oclif.lock
+
+coverage
+.nyc_output
