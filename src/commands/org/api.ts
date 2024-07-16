@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { EOL } from 'node:os';
+import * as fs from 'node:fs'
 import got, { Headers } from 'got';
 import chalk from 'chalk';
 import { ProxyAgent } from 'proxy-agent';
@@ -38,6 +39,7 @@ export class OrgApi extends SfCommand<void> {
       char: 'i',
       summary: 'Include HTTP response status and headers in the output.',
       default: false,
+      exclusive: ['stream-to-file'],
     }),
     method: Flags.option({
       options: [
@@ -60,10 +62,17 @@ export class OrgApi extends SfCommand<void> {
       char: 'H',
       multiple: true,
     }),
+    'stream-to-file': Flags.string({
+      summary: 'Stream response to file',
+      helpValue: 'Example: report.xlsx',
+      char: 'S',
+      exclusive: ['include'],
+    }),
     body: Flags.string({
       summary:
-        'The file to use as the body for the request (use "-" to read from standard input).',
+        'The file to use as the body for the request (use "-" to read from standard input, use "" for an empty body).',
       parse: async (input) => {
+        if (input === '') return '';
         if (input === '-') {
           const body = await readStdin();
           if (body) {
@@ -92,13 +101,14 @@ export class OrgApi extends SfCommand<void> {
     const headers: { [key: string]: string } = {};
 
     for (const header of keyValPair) {
-      const split = header.split(':');
-      if (split.length !== 2) {
+      const [key, ...rest] = header.split(':')
+      const value = rest.join(':').trim();
+      if (!key || !value) {
         throw new SfError(`Failed to parse HTTP header: "${header}".`, '', [
           'Make sure the header is in a "key:value" format, e.g. "Accept: application/json"',
         ]);
       }
-      headers[split[0]] = split[1].trim();
+      headers[key] = value;
     }
 
     return headers;
@@ -108,6 +118,7 @@ export class OrgApi extends SfCommand<void> {
     const { flags, args } = await this.parse(OrgApi);
 
     const org = flags['target-org'];
+    const streamFile = flags['stream-to-file'];
 
     await org.refreshAuth();
 
@@ -115,7 +126,7 @@ export class OrgApi extends SfCommand<void> {
       args.endpoint
     }`;
 
-    const res = await got(url, {
+    const options = {
       agent: { https: new ProxyAgent() },
       method: flags.method,
       headers: {
@@ -129,30 +140,42 @@ export class OrgApi extends SfCommand<void> {
       body: flags.method === 'GET' ? undefined : flags.body,
       throwHttpErrors: false,
       followRedirect: false,
-    });
+    }
 
-    // Print HTTP response status and headers.
-    if (flags.include) {
-      let httpInfo = `HTTP/${res.httpVersion} ${res.statusCode} ${EOL}`;
+    if (streamFile) {
+      const responseStream = got.stream(url, options);
+      const fileStream = fs.createWriteStream(streamFile);
+      responseStream.pipe(fileStream);
 
-      for (const [header] of Object.entries(res.headers)) {
-        httpInfo += `${chalk.blue.bold(header)}: ${
-          res.headers[header] as string
-        }${EOL}`;
+      fileStream.on('finish', () => this.log(`File saved to ${streamFile}`));
+      fileStream.on('error', (error) => { throw SfError.wrap(error) });
+      responseStream.on('error', (error) => { throw SfError.wrap(error) });
+    } else {
+      const res = await got(url, options);
+
+      // Print HTTP response status and headers.
+      if (flags.include) {
+        let httpInfo = `HTTP/${res.httpVersion} ${res.statusCode} ${EOL}`;
+
+        for (const [header] of Object.entries(res.headers)) {
+          httpInfo += `${chalk.blue.bold(header)}: ${
+            res.headers[header] as string
+          }${EOL}`;
+        }
+        this.log(httpInfo);
       }
-      this.log(httpInfo);
-    }
 
-    try {
-      // Try to pretty-print JSON response.
-      ux.styledJSON(JSON.parse(res.body));
-    } catch (err) {
-      // If response body isn't JSON, just print it to stdout.
-      this.log(res.body);
-    }
+      try {
+        // Try to pretty-print JSON response.
+        ux.styledJSON(JSON.parse(res.body));
+      } catch (err) {
+        // If response body isn't JSON, just print it to stdout.
+        this.log(res.body);
+      }
 
-    if (res.statusCode >= 400) {
-      process.exitCode = 1;
+      if (res.statusCode >= 400) {
+        process.exitCode = 1;
+      }
     }
   }
 }
