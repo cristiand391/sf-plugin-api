@@ -1,3 +1,11 @@
+# ⚠️ DEPRECATED ⚠️
+
+This command is now part of the Salesforce CLI since v2.56.7:
+
+https://github.com/forcedotcom/cli/tree/main/releasenotes#2567-august-28-2024
+
+----------------------------------
+
 # @cristiand391/sf-plugin-api
 
 A Salesforce CLI plugin to interact with the Salesforce APIs.
